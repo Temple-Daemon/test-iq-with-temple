@@ -283,7 +283,7 @@ export class Warzone {
       // QA mode: camera in front of the hero, looking at his face
       const yaw = this.hero.root.rotation.y;
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
-      this.camera.position.set(p.x + fx * 3.4, p.y + 1.5, p.z + fz * 3.4);
+      this.camera.position.set(p.x + fx * 2.1, p.y + 1.45, p.z + fz * 2.1);
       this.camera.lookAt(p.x, p.y + 1.35, p.z);
       return;
     }
