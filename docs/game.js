@@ -66,10 +66,10 @@ const soundBtn     = document.getElementById("soundBtn");
 const AUDIO = window.MemoryRushAudio || null; // synthesized SFX; game works without it
 
 const SPRITES = {
-  soldier: "assets/soldier.png",
-  soldierDown: "assets/soldier-down.png",
-  enemy: "assets/enemy.png",
-  enemyDown: "assets/enemy-down.png",
+  soldier: "assets/soldier.png?v=2",
+  soldierDown: "assets/soldier-down.png?v=2",
+  enemy: "assets/enemy.png?v=2",
+  enemyDown: "assets/enemy-down.png?v=2",
 };
 let spritesPreloaded = false;
 function preloadSprites() {
