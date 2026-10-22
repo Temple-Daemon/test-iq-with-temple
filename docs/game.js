@@ -66,16 +66,33 @@ const soundBtn     = document.getElementById("soundBtn");
 const AUDIO = window.MemoryRushAudio || null; // synthesized SFX; game works without it
 
 const SPRITES = {
-  soldier: "assets/soldier.png?v=4",
-  soldierDown: "assets/soldier-down.png?v=4",
-  enemy: "assets/enemy.png?v=4",
-  enemyDown: "assets/enemy-down.png?v=4",
+  soldier: "assets/soldier.png?v=5",
+  soldierDown: "assets/soldier-down.png?v=5",
+  enemy: "assets/enemy.png?v=5",
+  enemyDown: "assets/enemy-down.png?v=5",
 };
+const SCENE = [
+  "assets/ally-kneel.png?v=1",
+  "assets/ally-guard.png?v=1",
+  "assets/ally-advance.png?v=1",
+  "assets/jet.png?v=1",
+];
 let spritesPreloaded = false;
 function preloadSprites() {
   if (spritesPreloaded) return;
   spritesPreloaded = true;
   Object.keys(SPRITES).forEach(k => { const im = new Image(); im.src = SPRITES[k]; });
+  SCENE.forEach(src => { const im = new Image(); im.src = src; });
+}
+
+/* ambient jet flyby audio — quiet, infrequent, only while the page is visible */
+let jetAmbienceOn = false;
+function startJetAmbience() {
+  if (jetAmbienceOn) return;
+  jetAmbienceOn = true;
+  setInterval(() => {
+    if (!document.hidden) playSound("jetFlyby");
+  }, 22000);
 }
 
 /* runId-guarded battle timer: combat beats can never leak into the next run */
@@ -155,6 +172,7 @@ function startGame() {
   resetBattle();
   preloadSprites();
   if (AUDIO) { try { AUDIO.unlock(); } catch (e) {} } // audio must start from a user gesture
+  startJetAmbience();
   showScreen(gameScreen);
   startLevel();
 }

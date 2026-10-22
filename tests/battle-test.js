@@ -49,6 +49,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok("game screen shown", !$("gameScreen").classList.contains("hidden"));
   ok("enemy spawned for level 1", $("enemyWrap").className.includes("spawned"));
   ok("muzzle exists for both combatants", !!$("muzzleSoldier") && !!$("muzzleEnemy"));
+  ok("three allied soldiers on the field",
+     w.document.querySelectorAll(".ally").length === 3);
+  ok("three fighter jets in the sky",
+     w.document.querySelectorAll(".jet").length === 3);
+  ok("allies are distinct files (not repeated cutouts)",
+     new Set([...w.document.querySelectorAll(".ally")].map(a => a.src)).size === 3);
 
   // --- read the L1 sequence off the tiles and answer correctly ---
   const seq = [...w.document.querySelectorAll(".tile-front")].map(t => t.textContent);

@@ -104,9 +104,58 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-.muzzle-soldier { left: 74%; bottom: 34%; }
+.muzzle-soldier { left: 86%; bottom: 47%; }
 .muzzle-enemy  { left: 8%;  bottom: 40%; }
 .muzzle.flash { animation: muzzle-flash 0.28s ease-out both; }
+
+/* ---------- allied team (mid and far field) ----------
+   Separate characters, varied stances, depth-hazed so they read as
+   a coordinated unit around the hero without stealing focus. */
+.ally {
+  position: absolute;
+  bottom: 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: 50% 100%;
+}
+.ally-kneel {          /* mid-distance, stable firing overwatch */
+  left: 24%; bottom: 11vh; height: 30vh; z-index: 1;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.35)) brightness(0.94) saturate(0.82);
+  animation: ally-hold 6s ease-in-out infinite alternate;
+}
+.ally-guard {          /* far left, standing watch, hazy */
+  left: 15%; bottom: 24vh; height: 16vh; z-index: 1;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.3)) brightness(0.88) saturate(0.6) blur(0.6px);
+  animation: ally-scan 9s ease-in-out infinite alternate;
+}
+.ally-advance {        /* mid-right depth, advancing with weapon low-ready */
+  right: 30%; bottom: 19vh; height: 21vh; z-index: 1;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.32)) brightness(0.9) saturate(0.65) blur(0.4px);
+  animation: ally-move 11s ease-in-out infinite alternate;
+}
+
+/* ---------- fighter jets (2D sprites on flight paths) ---------- */
+.jet {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  user-select: none;
+  width: 13vw;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  animation: jet-cross linear infinite;
+}
+.jet-near {            /* closest: big, fast, crisp */
+  top: 9%; width: 16vw; animation-duration: 34s; animation-delay: -6s;
+}
+.jet-mid  {            /* middle distance */
+  top: 20%; width: 9vw; animation-duration: 52s; animation-delay: -31s;
+  filter: brightness(0.92) saturate(0.7) drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+}
+.jet-far  {            /* far: small, hazy, slow */
+  top: 31%; width: 5vw; animation-duration: 78s; animation-delay: -58s;
+  filter: brightness(0.85) saturate(0.5) blur(0.5px);
+}
 
 /* red vignette when the player takes a hit */
 .hit-vignette {
@@ -126,7 +175,7 @@ body {
 @keyframes soldier-idle { from { transform: translateY(0); } to { transform: translateY(-1.2%); } }
 @keyframes enemy-idle   { from { transform: translateX(0) rotate(0deg); } to { transform: translateX(-1%) rotate(-0.5deg); } }
 @keyframes soldier-aim {
-  from { transform: none; } to { transform: translateY(-1.5%) scale(1.015); }
+  from { transform: none; } to { transform: translateY(-0.6%) scale(1.008); }
 }
 @keyframes soldier-recoil {
   0% { transform: translateY(-1.5%) scale(1.015); }
@@ -155,6 +204,11 @@ body {
   18% { opacity: 1; transform: scale(1.15); }
   100% { opacity: 0; transform: scale(0.9); }
 }
+@keyframes ally-hold  { from { transform: translateY(0); } to { transform: translateY(-0.8%); } }
+@keyframes ally-scan  { from { transform: translateX(0) rotate(0.3deg); } to { transform: translateX(2.2%) rotate(-0.5deg); } }
+@keyframes ally-move  { from { transform: translateX(0); } to { transform: translateX(-4.5%); } }
+@keyframes jet-cross  { from { transform: translateX(115vw); } to { transform: translateX(-35vw); } }
+
 @keyframes hit-fade {
   0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; }
 }
@@ -387,6 +441,12 @@ body {
   .soldier-wrap { height: 52vh; left: -6%; }
   .enemy-wrap { height: 42vh; right: -4%; }
   .muzzle { width: 46px; height: 46px; }
+  .ally-kneel { left: 18%; bottom: 8vh; height: 22vh; }
+  .ally-guard { display: none; }
+  .ally-advance { display: none; }
+  .jet-near { width: 30vw; }
+  .jet-mid { width: 17vw; }
+  .jet-far { display: none; }
 }
 
 /* ============ additions v5: a11y, feedback, results ============ */

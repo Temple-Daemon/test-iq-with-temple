@@ -151,6 +151,27 @@ function stingWin() {
   note(784, 0.28, 0.4, "triangle", 0.22);  // G5
 }
 
+/* Distant jet flyby: a slow, quiet rumble that swells and fades. */
+function jetFlyby() {
+  if (!ready()) return;
+  const t0 = ctx.currentTime;
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer(3.2);
+  const lp = ctx.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.setValueAtTime(320, t0);
+  lp.frequency.linearRampToValueAtTime(900, t0 + 1.6);
+  lp.frequency.linearRampToValueAtTime(300, t0 + 3.2);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.001, t0);
+  g.gain.linearRampToValueAtTime(0.09, t0 + 1.5);
+  g.gain.linearRampToValueAtTime(0.001, t0 + 3.2);
+  src.connect(lp).connect(g).connect(master);
+  src.start(t0);
+  src.stop(t0 + 3.3);
+  thump(48, 0.05, 0.6, 1.8);
+}
+
 function stingFail() {
   if (!ready()) return;
   note(110, 0, 0.5, "sawtooth", 0.18);
@@ -170,6 +191,6 @@ function setMuted(m) {
 function getMuted() { return muted; }
 
 window.MemoryRushAudio = {
-  unlock, shot, enemyShot, reload, stingWin, stingFail, setMuted, getMuted,
+  unlock, shot, enemyShot, reload, stingWin, stingFail, jetFlyby, setMuted, getMuted,
 };
 })();
