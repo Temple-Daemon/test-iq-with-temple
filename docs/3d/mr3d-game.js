@@ -7,9 +7,9 @@
  */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { buildScene } from "./mr3d-scene.js?v=2";
-import { loadSoldierAssets, makeSoldier } from "./mr3d-soldier.js?v=2";
-import { createInput } from "./mr3d-controls.js?v=2";
+import { buildScene } from "./mr3d-scene.js?v=3";
+import { loadSoldierAssets, makeSoldier } from "./mr3d-soldier.js?v=3";
+import { createInput } from "./mr3d-controls.js?v=3";
 
 const FACE_TEX = "assets/3d/hero-face.png";
 
