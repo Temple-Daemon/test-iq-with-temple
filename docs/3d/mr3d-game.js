@@ -123,6 +123,7 @@ export class Warzone {
 
   begin() {
     // fresh run: hero back to start, enemy repositions and aims
+    this.choreo = false;
     this.runPhase = "playing";
     this.hero.root.position.set(0, 0, 12);
     this.hero.root.rotation.y = 0;
@@ -146,7 +147,10 @@ export class Warzone {
   }
 
   correctAnswer() {
-    // choreographed kill: hero aims, fires, enemy falls, hero reloads
+    // choreographed kill: hero aims, fires, enemy falls, hero reloads.
+    // choreo suspends updateHero's per-frame idle/walk replays so the
+    // combat animation is not instantly overwritten.
+    this.choreo = true;
     this.faceEnemy();
     const seq = [
       [0, () => { this.hero.play("aim", 0.12); }],
@@ -159,13 +163,14 @@ export class Warzone {
       [560, () => { this.enemy.alive = false; this.enemy.play("hit", 0.1); }],
       [760, () => { this.enemy.play("death", 0.15); this.hooks.onEnemyDown && this.hooks.onEnemyDown(); }],
       [1400, () => { this.hero.play("reload", 0.12); this.hooks.onReload && this.hooks.onReload(); }],
-      [2300, () => { this.hero.play("idle", 0.2); }],
+      [2300, () => { this.hero.play("idle", 0.2); this.choreo = false; }],
     ];
     this.runSeq(seq);
   }
 
   wrongAnswer() {
     // the hero is hit and falls; enemy stays standing
+    this.choreo = true;
     const seq = [
       [0, () => { this.enemy.play("shooting", 0.1); this.flash(this.enemy); this.hooks.onEnemyFire && this.hooks.onEnemyFire(); }],
       [340, () => { this.hero.play("hit", 0.06); this.shake = 1; }],
@@ -235,11 +240,12 @@ export class Warzone {
       const nz = hero.root.position.z + v.z * walkSpeed * dt;
       hero.root.position.x = Math.max(-30, Math.min(30, nx));
       hero.root.position.z = Math.max(-30, Math.min(30, nz));
-      const flat = Math.hypot(v.x, v.z);
-      if (input.crouch) hero.play("crouch", 0.2);
-      else if (input.sprint) hero.play("runRifle", 0.25);
-      else hero.play("walk", 0.25);
-    } else {
+      if (!this.choreo) {
+        if (input.crouch) hero.play("crouch", 0.2);
+        else if (input.sprint) hero.play("runRifle", 0.25);
+        else hero.play("walk", 0.25);
+      }
+    } else if (!this.choreo) {
       if (input.crouch) hero.play("crouch", 0.25);
       else hero.play("idle", 0.3);
     }

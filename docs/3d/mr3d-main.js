@@ -5,7 +5,7 @@
  * and game.js keeps the working 2D battle scene.
  */
 import * as THREE from "three";
-import { Warzone } from "./mr3d-game.js?v=8";
+import { Warzone } from "./mr3d-game.js?v=9";
 
 function webglOK() {
   try {
