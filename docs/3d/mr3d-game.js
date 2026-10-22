@@ -288,11 +288,19 @@ export class Warzone {
       return;
     }
     const target = new THREE.Vector3(p.x, p.y + 1.35, p.z);
-    if (this.runPhase === "idle" && !this.startedOnce) {
+    if (this.runPhase === "idle" && !this.startedOnce && !this.faceView) {
       // menu: slow cinematic orbit
       const a = this.t * 0.12;
       this.camera.position.set(p.x + Math.sin(a) * 8.5, 3.2 + Math.sin(a * 0.6) * 0.5, p.z + Math.cos(a) * 8.5);
       this.camera.lookAt(target);
+      return;
+    }
+    if (this.faceView) {
+      // QA mode: camera in front of the hero, looking at his face
+      const yaw = this.hero.root.rotation.y;
+      const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
+      this.camera.position.set(p.x + fx * 2.1, p.y + 1.45, p.z + fz * 2.1);
+      this.camera.lookAt(p.x, p.y + 1.35, p.z);
       return;
     }
     const dist = input.dist || 5.2;
