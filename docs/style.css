@@ -547,3 +547,6 @@ a:focus-visible {
   80% { transform: translateX(-2px); }
 }
 .shell.shake-shell { animation: shake-shell 0.5s ease both; }
+
+/* flash-debug QA mode: static, always-visible muzzle flashes */
+body.flash-debug .muzzle { animation: none !important; opacity: 1; }

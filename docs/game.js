@@ -436,6 +436,16 @@ answerEl.addEventListener("keydown", e => {
   if (e.key === "Enter") { e.preventDefault(); submitAnswer(); }
 });
 
+/* QA debug mode: ?flashdebug=1 pins both muzzle flashes visible with
+   the enemy spawned, so flash placement can be screenshot-verified
+   without racing the 280ms fire window. No effect on normal play. */
+if (/[?&]flashdebug=1/.test(window.location.search)) {
+  document.body.classList.add("flash-debug");
+  enemyWrap.classList.add("spawned");
+  muzzleSoldier.classList.add("flash");
+  muzzleEnemy.classList.add("flash");
+}
+
 // If the tab was backgrounded during the countdown, correct the
 // timer display the moment the player returns.
 document.addEventListener("visibilitychange", () => {
