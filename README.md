@@ -71,6 +71,7 @@ The core logic (sequence generation, answer parsing/validation, scoring, persona
 ```bash
 node --test tests/test-core.js          # 20 unit tests: rules, parsing, scoring, best storage
 node tests/battle-test.js               # 24 integration checks: combat choreography, reset, defeat flow
+node tests/victory-test.js              # full 10-level victory run through the real combat pipeline (~75s)
 ```
 
 Manual QA (performed in a real browser): start, replay, wrong-answer reveal, full 10-level victory run, timer cleanup on restart, mobile viewport, keyboard-only play.
