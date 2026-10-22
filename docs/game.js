@@ -170,9 +170,11 @@ function startGame() {
   feedbackEl.textContent = "";
   feedbackEl.className = "feedback";
   resetBattle();
+  if (window.MR3D && window.MR3D.ready) { try { window.MR3D.begin(); } catch (e) {} }
   preloadSprites();
   if (AUDIO) { try { AUDIO.unlock(); } catch (e) {} } // audio must start from a user gesture
   startJetAmbience();
+  playSound("windLoop");
   showScreen(gameScreen);
   startLevel();
 }
@@ -204,6 +206,11 @@ function spawnEnemy() {
 /* Player fires: aim, crack, hit, reload, enemy down. next() runs the
    level transition once the sequence finishes. */
 function combatFire(myRun, next) {
+  if (window.MR3D && window.MR3D.ready) {
+    try { window.MR3D.correct(); } catch (e) {}
+    battleAfter(2100, myRun, next);
+    return;
+  }
   soldierWrap.classList.add("aiming");
   battleAfter(280, myRun, () => {
     soldierWrap.classList.add("firing");
@@ -227,6 +234,11 @@ function combatFire(myRun, next) {
 
 /* Enemy fires back and the player goes down — shown before the results screen. */
 function combatEnemyWins(myRun, next) {
+  if (window.MR3D && window.MR3D.ready) {
+    try { window.MR3D.wrong(); } catch (e) {}
+    battleAfter(2400, myRun, next);
+    return;
+  }
   battleAfter(300, myRun, () => enemyWrap.classList.add("aiming"));
   battleAfter(650, myRun, () => {
     muzzleEnemy.classList.add("flash");
@@ -406,6 +418,7 @@ function paintResults(victory) {
 }
 
 function winScreen() {
+  if (window.MR3D && window.MR3D.ready) { try { window.MR3D.victory(); } catch (e) {} }
   paintDots();
   playSound("stingWin");
   paintResults(true);
@@ -456,6 +469,20 @@ document.addEventListener("visibilitychange", () => {
     tickCountdown(runId, total);
   }
 });
+
+/* ---------- 3D warzone integration ----------
+ * The 3D module (3d/mr3d-main.js) publishes window.MR3D when WebGL
+ * initialized successfully. Everything below degrades to the original
+ * 2D battle choreography when MR3D is absent (old browsers, jsdom tests). */
+const MODE_3D = { on: !!window.MR3D };
+document.addEventListener("mr3d:ready", () => {
+  MODE_3D.on = true;
+  // module finished loading mid-run: sync the 3D battle to the active run
+  if (window.MR3D && !gameScreen.classList.contains("hidden")) window.MR3D.begin();
+});
+document.addEventListener("mr3d:failed", () => { MODE_3D.on = false; });
+
+function fx3d(fn2d) { return MODE_3D.on ? null : fn2d; }
 
 /* ---------- init ---------- */
 buildDots();

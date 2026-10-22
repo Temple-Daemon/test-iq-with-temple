@@ -11,6 +11,7 @@
 
 let ctx = null;      // AudioContext, created on first user gesture
 let master = null;   // master gain
+let windStarted = false;
 let muted = loadMuted();
 
 function loadMuted() {
@@ -172,6 +173,50 @@ function jetFlyby() {
   thump(48, 0.05, 0.6, 1.8);
 }
 
+/* Distant artillery: a soft low boom, random pitch, very quiet. */
+function boom() {
+  if (!ready()) return;
+  const t0 = ctx.currentTime;
+  thump(42 + Math.random() * 14, 0.05, 0, 0.5);
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer(0.6);
+  const lp = ctx.createBiquadFilter();
+  lp.type = "lowpass"; lp.frequency.value = 240;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.001, t0);
+  g.gain.linearRampToValueAtTime(0.045, t0 + 0.04);
+  g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
+  src.connect(lp).connect(g).connect(master);
+  src.start(t0); src.stop(t0 + 0.65);
+}
+
+/* Winter wind bed: continuous filtered noise with a slow swell. */
+function windLoop() {
+  if (!ready() || windStarted) return;
+  windStarted = true;
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer(4);
+  src.loop = true;
+  const bp = ctx.createBiquadFilter();
+  bp.type = "bandpass"; bp.frequency.value = 500; bp.Q.value = 0.6;
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 0.13;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 260;
+  lfo.connect(lfoGain).connect(bp.frequency);
+  const g = ctx.createGain();
+  g.gain.value = 0.035;
+  src.connect(bp).connect(g).connect(master);
+  src.start(); lfo.start();
+}
+
+/* Enemy falls: soft body thud. */
+function thud() {
+  if (!ready()) return;
+  thump(70, 0.09, 0, 0.16);
+  thump(52, 0.06, 0.09, 0.2);
+}
+
 function stingFail() {
   if (!ready()) return;
   note(110, 0, 0.5, "sawtooth", 0.18);
@@ -191,6 +236,6 @@ function setMuted(m) {
 function getMuted() { return muted; }
 
 window.MemoryRushAudio = {
-  unlock, shot, enemyShot, reload, stingWin, stingFail, jetFlyby, setMuted, getMuted,
+  unlock, shot, enemyShot, reload, stingWin, stingFail, jetFlyby, boom, windLoop, thud, setMuted, getMuted,
 };
 })();

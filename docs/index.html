@@ -10,7 +10,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=9" />
+  <link rel="stylesheet" href="style.css?v=10" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- Battle stage: tactical environment + combatants (pure visuals, no game state) -->
@@ -122,7 +130,22 @@
   </main>
 
   <script src="game-core.js?v=3"></script>
+  <!-- 3D winter warzone (boots after the DOM is ready; silent fallback
+       to the 2D battle scene if WebGL or assets are unavailable) -->
+  <canvas id="warzone" aria-hidden="true"></canvas>
+  <div class="touch-ui" aria-hidden="true">
+    <div id="joy"><div id="joyKnob"></div></div>
+    <div class="touch-buttons">
+      <button id="btnJump" type="button">JUMP</button>
+      <button id="btnSprint" type="button">SPRINT</button>
+      <button id="btnCrouch" type="button">CROUCH</button>
+      <button id="btnReload" type="button">RELOAD</button>
+      <button id="btnFire" type="button">FIRE</button>
+    </div>
+  </div>
+
   <script src="game-audio.js?v=1"></script>
-  <script src="game.js?v=9"></script>
+  <script src="game.js?v=10"></script>
+  <script type="module" src="3d/mr3d-main.js?v=1"></script>
 </body>
 </html>
