@@ -18,12 +18,8 @@
      instantly failing the run.
    ============================================================ */
 
-const {
-  LEVELS, FINAL_MSG,
-  sample, parseAnswer, checkAnswer,
-  levelPoints, totalWinScore,
-  storage, loadBest, saveBest,
-} = window.MemoryRushCore;
+const CORE = window.MemoryRushCore;
+const { LEVELS, FINAL_MSG, sample, parseAnswer, checkAnswer, levelPoints, totalWinScore, storage, loadBest, saveBest } = CORE;
 
 /* ---------- dom ---------- */
 const startScreen = document.getElementById("startScreen");
@@ -258,12 +254,7 @@ function submitAnswer() {
 /* ---------- end of run ---------- */
 
 function runResult(victory) {
-  return {
-    score,
-    levelReached: level + 1,
-    cleared: victory ? LEVELS.length : level,
-    victory,
-  };
+  return CORE.runResult(level, score, victory);
 }
 
 function paintResults(victory) {

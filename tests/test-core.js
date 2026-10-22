@@ -162,3 +162,24 @@ test("generated sequences always pass checkAnswer for their own parse", () => {
     assert.ok(checkAnswer(parseAnswer(typed), seq), `roundtrip failed for ${typed}`);
   }
 });
+
+/* ---------- 8. run results (level counting) ---------- */
+test("victory reports level reached as 10/10, never 11/10", () => {
+  const r = core.runResult(10, 5500, true); // loop already advanced past level 10
+  assert.equal(r.levelReached, 10);
+  assert.equal(r.cleared, 10);
+  assert.ok(r.victory);
+});
+
+test("failure at the first level reports 1/10 reached, 0 cleared", () => {
+  const r = core.runResult(0, 0, false);
+  assert.equal(r.levelReached, 1);
+  assert.equal(r.cleared, 0);
+});
+
+test("failure mid-run reports the failed level and keeps banked score", () => {
+  const r = core.runResult(4, 1000, false); // failed level 5 with 1000 pts banked
+  assert.equal(r.levelReached, 5);
+  assert.equal(r.cleared, 4);
+  assert.equal(r.score, 1000);
+});

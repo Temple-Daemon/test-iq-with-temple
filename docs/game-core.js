@@ -116,6 +116,18 @@ function isBetter(result, best) {
   return result.victory && !best.victory; // tie-break: a full clear beats a partial run
 }
 
+// ---------- run result ----------
+// levelIndex is 0-based; on victory the loop has already advanced past
+// the last level, so "level reached" is clamped to 10/10.
+function runResult(levelIndex, score, victory) {
+  return {
+    score,
+    levelReached: victory ? LEVELS.length : Math.min(levelIndex + 1, LEVELS.length),
+    cleared: victory ? LEVELS.length : levelIndex,
+    victory,
+  };
+}
+
 // ---------- config sanity ----------
 // Catches config mistakes (bad sizes, empty pools, non-2s show times...).
 function validateLevels() {
@@ -135,7 +147,7 @@ function validateLevels() {
 const MemoryRushCore = {
   LEVELS, FINAL_MSG, LEVEL_POINTS, BEST_KEY,
   sample, parseAnswer, checkAnswer,
-  levelPoints, totalWinScore,
+  levelPoints, totalWinScore, runResult,
   storage, loadBest, saveBest, isBetter,
   validateLevels,
 };
