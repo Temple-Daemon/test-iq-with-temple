@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { buildScene } from "./mr3d-scene.js?v=3";
-import { loadSoldierAssets, makeSoldier } from "./mr3d-soldier.js?v=3";
+import { loadSoldierAssets, makeSoldier } from "./mr3d-soldier.js?v=4";
 import { createInput } from "./mr3d-controls.js?v=3";
 
 const FACE_TEX = "assets/3d/hero-face.png";
@@ -203,6 +203,10 @@ export class Warzone {
   runSeq(steps) {
     steps.forEach(([ms, fn]) => this.pending.push({ at: this.t + ms / 1000, fn }));
     this.pending.sort((a, b) => a.at - b.at);
+    if (!this._seqErrGuard) {
+      this._seqErrGuard = true;
+      window.addEventListener("error", e => { this.lastError = String(e.message); });
+    }
   }
 
   get pending() {

@@ -221,6 +221,7 @@ export function makeSoldier(assets, opts, loader, THREE_REF) {
       if (current) { next.crossFadeFrom(current, fade, false); }
       next.play();
       current = next;
+      S.currentName = name;
       return next;
     },
     stop() { if (current) { current.fadeOut(0.2); current = null; } },

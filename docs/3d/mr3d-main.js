@@ -5,7 +5,7 @@
  * and game.js keeps the working 2D battle scene.
  */
 import * as THREE from "three";
-import { Warzone } from "./mr3d-game.js?v=7";
+import { Warzone } from "./mr3d-game.js?v=8";
 
 function webglOK() {
   try {
@@ -51,6 +51,21 @@ async function boot() {
     };
     await war.init();
     if (/[?&]faceview=1/.test(window.location.search)) war.faceView = true;
+    if (/[?&]debug3d=1/.test(window.location.search)) {
+      const el = document.createElement("div");
+      el.id = "mrdebug";
+      el.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:99;background:#000c;" +
+        "color:#ccff00;font:11px/1.4 monospace;padding:6px 10px;pointer-events:none";
+      document.body.appendChild(el);
+      setInterval(() => {
+        el.textContent =
+          "phase=" + war.runPhase +
+          " | hero=" + (war.hero.currentName || "-") +
+          " | enemy=" + (war.enemy.currentName || "-") +
+          " | pending=" + war.pending.length +
+          " | err=" + (war.lastError || "-");
+      }, 400);
+    }
     window.MR3D.ready = true;
     document.body.classList.add("mode-3d");
     if (matchMedia("(pointer: coarse)").matches) document.body.classList.add("touch");
