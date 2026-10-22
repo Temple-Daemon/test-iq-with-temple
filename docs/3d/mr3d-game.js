@@ -279,6 +279,14 @@ export class Warzone {
 
   updateCamera(dt, input) {
     const p = this.hero.root.position;
+    if (this.faceView) {
+      // QA mode: camera in front of the hero, looking at his face
+      const yaw = this.hero.root.rotation.y;
+      const fx = -Math.sin(yaw), fz = -Math.cos(yaw);
+      this.camera.position.set(p.x + fx * 3.4, p.y + 1.5, p.z + fz * 3.4);
+      this.camera.lookAt(p.x, p.y + 1.35, p.z);
+      return;
+    }
     const target = new THREE.Vector3(p.x, p.y + 1.35, p.z);
     if (this.runPhase === "idle" && !this.startedOnce) {
       // menu: slow cinematic orbit

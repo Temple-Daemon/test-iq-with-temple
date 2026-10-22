@@ -50,6 +50,7 @@ async function boot() {
       playing: () => war.runPhase,
     };
     await war.init();
+    if (/[?&]faceview=1/.test(window.location.search)) war.faceView = true;
     window.MR3D.ready = true;
     document.body.classList.add("mode-3d");
     if (matchMedia("(pointer: coarse)").matches) document.body.classList.add("touch");

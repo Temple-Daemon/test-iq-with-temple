@@ -606,6 +606,15 @@ body.mode-3d.touch #joyKnob {
   justify-self: end;
 }
 
-/* answer HUD stays above the 3D canvas and touch UI */
-body.mode-3d .hud, body.mode-3d .screen-start,
-body.mode-3d .screen-end, body.mode-3d .brand { z-index: 5; position: relative; }
+/* Overlay stack: screens sit above the canvas but pass clicks through
+   to it (pointer lock, camera drag) except on their interactive
+   children, whose boxes hug their own content. */
+body.mode-3d .hud,
+body.mode-3d .screen,
+body.mode-3d footer {
+  position: relative; z-index: 5; pointer-events: none;
+}
+body.mode-3d .hud > *,
+body.mode-3d .screen > *,
+body.mode-3d footer > * { pointer-events: auto; }
+#warzone { cursor: crosshair; }
