@@ -24,7 +24,48 @@ Think you have a sharp memory? Put it to the test!
 
 ```bash
 git clone https://github.com/Temple-Daemon/test-iq-with-temple.git
-## 🪖 Tactical Combat Edition
+## ❄️ 3D Winter Warzone Edition
+
+The tactical upgrade is now **fully 3D** (three.js, WebGL) with the entire
+10-level memory core untouched:
+
+- **Move freely between answers**: WASD / arrow keys (layout-independent
+  `e.code`), Shift sprint, C/Ctrl crouch toggle, R reload, Space jump,
+  mouse-look with pointer lock on the canvas, wheel zoom. The keyboard
+  never steals keys from the answer input.
+- **Mobile**: virtual joystick (left), drag-to-look (canvas), and
+  FIRE / RELOAD / CROUCH / SPRINT / JUMP buttons pinned to the edges.
+- **Winter warzone**: procedural snow terrain with a flat combat arena,
+  snow-capped pines, trenches, sandbag barriers, a ruined building,
+  wrecked hull, crates, distant smoke plumes, 1300-particle snowfall,
+  three patrolling fighter jets, and soft overcast lighting with
+  shadows on desktop. No extra texture downloads: everything is
+  generated geometry.
+- **Characters**: CC0 Quaternius/KayKit Rig_Medium mannequins with the
+  CC0 animation library (idle/walk/run/crouch/aim/shoot/reload/jump/
+  hit/death). The hero wears winter camo with a face decal generated
+  from the founder's reference portrait (an approximate likeness).
+  A 4-soldier allied squad patrols on waypoints; the enemy aims,
+  tracks the hero, and fires back on a wrong answer.
+- **Combat flow**: correct answer -> hero aims, fires (muzzle point
+  light + camera shake), enemy is hit and dies, hero reloads, next
+  level spawns a fresh enemy at a new position. Wrong answer -> enemy
+  fires, hero falls, run over. A choreography lock keeps the combat
+  animations from being overridden by the idle loop.
+- **Graceful fallback**: if WebGL is missing or the 3D assets fail to
+  load, the game silently keeps the original 2D battle scene. The 2D
+  and 3D modes run the same memory core (`game-core.js`), scoring and
+  personal-best tracking.
+- **QA modes**: `?debug3d=1` shows a live 3D state strip
+  (phase/hero/enemy/pending), `?faceview=1` parks the camera in front
+  of the hero.
+
+Asset licenses: mannequin and animation GLBs are CC0 (Quaternius
+Ultimate Animated Character Pack, KayKit). three.js ships from CDN
+via an import map. Version-bump `?v=` on every deploy that touches
+the module chain: the CDN caches per exact URL.
+
+## 🪖 Tactical Combat Edition (2D)
 
 The web edition wraps the ten-level memory challenge in a tactical combat presentation:
 
