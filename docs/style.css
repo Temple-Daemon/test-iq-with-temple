@@ -31,29 +31,146 @@ body {
   align-items: center;
 }
 
-/* ---------- background fx ---------- */
-.bg-image {
+/* ---------- battle stage (tactical environment + combatants) ----------
+   Pure visuals: environment photo, hero soldier, enemy, muzzle flashes.
+   Everything sits behind the UI shell, never blocks input, and stays
+   legible through soft gradient shading at the very top and bottom. */
+.battle {
   position: fixed; inset: 0; z-index: -2;
-  background: url("assets/bg-soldier.png") center right / cover no-repeat;
-  opacity: 0.42;
+  overflow: hidden;
   pointer-events: none;
 }
-.bg-grid {
-  position: fixed; inset: 0; z-index: -3;
-  background-image:
-    linear-gradient(rgba(215, 255, 62, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 255, 62, 0.05) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 30%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 30%, transparent 100%);
+.battle-env {
+  position: absolute; inset: 0;
+  background: url("assets/environment.jpg") center / cover no-repeat;
+  background-color: #1b1408; /* while the photo loads */
 }
-/* dark veil so the soldier sits behind, not through, the UI */
-body::after {
-  content: "";
-  position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(ellipse 80% 90% at 38% 45%, rgba(10, 13, 7, 0.25) 0%, rgba(10, 13, 7, 0.78) 60%, rgba(10, 13, 7, 0.92) 100%);
+/* subtle shading keeps HUD + input readable without darkening the scene */
+.battle::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(10, 13, 7, 0.55) 0%, rgba(10, 13, 7, 0) 18%),
+    linear-gradient(transparent 70%, rgba(10, 13, 7, 0.35) 100%);
+}
+
+.combatant-wrap {
+  position: absolute;
+  bottom: 0;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45));
+}
+.combatant {
+  display: block;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* hero soldier: bottom-left, clearly lit, prominent */
+.soldier-wrap {
+  left: 4%;
+  height: 78vh;
+  max-height: 780px;
+  z-index: 2;
+  transform-origin: 50% 100%;
+  animation: soldier-idle 5s ease-in-out infinite alternate;
+}
+/* enemy: mid-right, one per level */
+.enemy-wrap {
+  right: 7%;
+  height: 62vh;
+  max-height: 640px;
+  bottom: 4vh;
+  z-index: 1;
+  transform-origin: 50% 100%;
+  animation: enemy-idle 4s ease-in-out infinite alternate;
+  transform: translateX(4%);
+  opacity: 0;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.enemy-wrap.spawned { opacity: 1; transform: translateX(0); }
+.enemy-wrap.fallen {
+  opacity: 1; transform: translateX(0) translateY(14%);
+  animation: enemy-fall 0.9s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.enemy-wrap.hidden, .soldier-wrap.hidden { display: none; }
+
+/* muzzle flashes (positioned at each rifle's muzzle) */
+.muzzle {
+  position: absolute;
+  width: 74px; height: 74px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbe6 0%, #ffd23e 38%, rgba(255, 140, 30, 0.75) 62%, rgba(255, 120, 0, 0) 75%);
+  filter: blur(0.5px);
+  opacity: 0;
   pointer-events: none;
 }
+.muzzle-soldier { left: 74%; bottom: 34%; }
+.muzzle-enemy  { left: 8%;  bottom: 40%; }
+.muzzle.flash { animation: muzzle-flash 0.28s ease-out both; }
+
+/* red vignette when the player takes a hit */
+.hit-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 90% at 50% 50%, rgba(255, 40, 60, 0.34) 0%, rgba(160, 0, 20, 0.5) 100%);
+  opacity: 0;
+}
+.hit-vignette.flash { animation: hit-fade 0.7s ease-out both; }
+
+/* ---- combatant animation states ---- */
+.soldier-wrap.aiming   { animation: soldier-aim 0.35s ease-out both; }
+.soldier-wrap.firing   { animation: soldier-recoil 0.22s ease-out both; }
+.soldier-wrap.reloading { animation: soldier-reload 0.85s ease-in-out both; }
+.enemy-wrap.aiming    { animation: enemy-aim 0.4s ease-out both; }
+.enemy-wrap.hit       { animation: enemy-hit 0.45s ease-out both; }
+
+@keyframes soldier-idle { from { transform: translateY(0); } to { transform: translateY(-1.2%); } }
+@keyframes enemy-idle   { from { transform: translateX(0) rotate(0deg); } to { transform: translateX(-1%) rotate(-0.5deg); } }
+@keyframes soldier-aim {
+  from { transform: none; } to { transform: translateY(-1.5%) scale(1.015); }
+}
+@keyframes soldier-recoil {
+  0% { transform: translateY(-1.5%) scale(1.015); }
+  35% { transform: translateY(-1.5%) scale(1.03) rotate(0.6deg); }
+  100% { transform: translateY(-1.5%) scale(1.015); }
+}
+@keyframes soldier-reload {
+  0%, 100% { transform: translateY(-1.5%); }
+  40% { transform: translateY(1.5%) rotate(-1deg); }
+}
+@keyframes enemy-aim {
+  from { transform: translateX(0); } to { transform: translateX(-3%) scale(1.02); }
+}
+@keyframes enemy-hit {
+  0% { transform: translateX(-3%) scale(1.02); filter: drop-shadow(0 18px 22px rgba(0,0,0,.45)) brightness(1.9) saturate(2.4); }
+  55% { transform: translateX(-1%) rotate(2deg); filter: drop-shadow(0 18px 22px rgba(0,0,0,.45)) brightness(1.6) saturate(1.8); }
+  100% { transform: translateX(-2%); filter: drop-shadow(0 18px 22px rgba(0,0,0,.45)); }
+}
+@keyframes enemy-fall {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 1; }
+  60% { transform: translateX(-4%) translateY(12%) rotate(-14deg); opacity: 1; }
+  100% { transform: translateX(-5%) translateY(14%) rotate(-8deg); opacity: 0.92; }
+}
+@keyframes muzzle-flash {
+  0% { opacity: 0; transform: scale(0.4); }
+  18% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+@keyframes hit-fade {
+  0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; }
+}
+
+/* HUD sound toggle */
+.btn-icon {
+  background: rgba(215, 255, 62, 0.07);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.42rem 0.5rem;
+  cursor: pointer;
+}
+.btn-icon:hover { border-color: var(--lemon); }
 
 /* ---------- shell ---------- */
 .shell {
@@ -73,6 +190,7 @@ body::after {
   display: flex; align-items: center; justify-content: space-between;
   gap: 1rem; padding: 0.4rem 1rem 1.4rem;
 }
+.hud-right { display: flex; align-items: center; gap: 0.7rem; }
 .brand { display: flex; align-items: center; gap: 0.7rem; }
 .brand-icon { font-size: 1.7rem; filter: drop-shadow(0 0 10px rgba(215, 255, 62, 0.6)); }
 .brand-title {
@@ -266,7 +384,9 @@ body::after {
   .tile { width: 56px; height: 76px; }
   .tile-front { font-size: 1.2rem; }
   .input-row { flex-direction: column; }
-  .bg-image { background-position: center top; opacity: 0.3; }
+  .soldier-wrap { height: 52vh; left: -6%; }
+  .enemy-wrap { height: 42vh; right: -4%; }
+  .muzzle { width: 46px; height: 46px; }
 }
 
 /* ============ additions v5: a11y, feedback, results ============ */
@@ -355,3 +475,15 @@ a:focus-visible {
   .stage-top { flex-wrap: wrap; gap: 0.4rem 0.8rem; }
   .score-label { margin-left: 0; }
 }
+
+/* ============ additions v8: battle shake ============ */
+/* the whole shell jolts when the player takes a hit */
+@keyframes shake-shell {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-10px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(4px); }
+  80% { transform: translateX(-2px); }
+}
+.shell.shake-shell { animation: shake-shell 0.5s ease both; }

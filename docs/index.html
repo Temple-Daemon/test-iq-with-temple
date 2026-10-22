@@ -10,11 +10,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
-  <div class="bg-image" aria-hidden="true"></div>
-  <div class="bg-grid" aria-hidden="true"></div>
+  <!-- Battle stage: tactical environment + combatants (pure visuals, no game state) -->
+  <div class="battle" aria-hidden="true">
+    <div class="battle-env"></div>
+    <div class="combatant-wrap soldier-wrap" id="soldierWrap">
+      <img class="combatant" id="soldierImg" src="assets/soldier.png" alt="" />
+      <div class="muzzle muzzle-soldier" id="muzzleSoldier"></div>
+    </div>
+    <div class="combatant-wrap enemy-wrap" id="enemyWrap">
+      <img class="combatant" id="enemyImg" src="assets/enemy.png" alt="" />
+      <div class="muzzle muzzle-enemy" id="muzzleEnemy"></div>
+    </div>
+    <div class="hit-vignette" id="hitVignette"></div>
+  </div>
 
   <main class="shell">
 
@@ -24,7 +35,10 @@
         <span class="brand-icon">🧠</span>
         <h1 class="brand-title">MEMORY <span class="accent">RUSH</span></h1>
       </div>
-      <div class="level-track" id="levelTrack" aria-label="Level progress"></div>
+      <div class="hud-right">
+        <div class="level-track" id="levelTrack" aria-label="Level progress"></div>
+        <button type="button" class="btn-icon" id="soundBtn" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+      </div>
     </header>
 
     <!-- Start screen -->
@@ -98,6 +112,7 @@
   </main>
 
   <script src="game-core.js?v=3"></script>
-  <script src="game.js?v=7"></script>
+  <script src="game-audio.js?v=1"></script>
+  <script src="game.js?v=8"></script>
 </body>
 </html>

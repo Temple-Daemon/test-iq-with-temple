@@ -52,6 +52,43 @@ const statBest    = document.getElementById("statBest");
 const bestBadge   = document.getElementById("bestBadge");
 const startBest   = document.getElementById("startBest");
 
+/* battle stage (visuals only — game state stays in this file) */
+const battleShake = document.querySelector(".shell");
+const soldierWrap = document.getElementById("soldierWrap");
+const soldierImg  = document.getElementById("soldierImg");
+const enemyWrap   = document.getElementById("enemyWrap");
+const enemyImg    = document.getElementById("enemyImg");
+const muzzleSoldier = document.getElementById("muzzleSoldier");
+const muzzleEnemy  = document.getElementById("muzzleEnemy");
+const hitVignette  = document.getElementById("hitVignette");
+const soundBtn     = document.getElementById("soundBtn");
+
+const AUDIO = window.MemoryRushAudio || null; // synthesized SFX; game works without it
+
+const SPRITES = {
+  soldier: "assets/soldier.png",
+  soldierDown: "assets/soldier-down.png",
+  enemy: "assets/enemy.png",
+  enemyDown: "assets/enemy-down.png",
+};
+let spritesPreloaded = false;
+function preloadSprites() {
+  if (spritesPreloaded) return;
+  spritesPreloaded = true;
+  Object.keys(SPRITES).forEach(k => { const im = new Image(); im.src = SPRITES[k]; });
+}
+
+/* runId-guarded battle timer: combat beats can never leak into the next run */
+function battleAfter(ms, myRun, fn) {
+  setTimeout(() => { if (myRun === runId) fn(); }, ms);
+}
+
+function playSound(name) {
+  if (AUDIO && typeof AUDIO[name] === "function") {
+    try { AUDIO[name](); } catch (e) { /* audio must never break the game */ }
+  }
+}
+
 /* ---------- state ---------- */
 let level = 0;            // 0-based index
 let score = 0;            // points banked by cleared levels
@@ -115,8 +152,75 @@ function startGame() {
   paintScore();
   feedbackEl.textContent = "";
   feedbackEl.className = "feedback";
+  resetBattle();
+  preloadSprites();
+  if (AUDIO) { try { AUDIO.unlock(); } catch (e) {} } // audio must start from a user gesture
   showScreen(gameScreen);
   startLevel();
+}
+
+/* ---------- battle stage control ----------
+   All of this is presentation: gameplay lives in game-core + this
+   file's level flow. Classes are reset wholesale so a replay can
+   never inherit a fallen enemy or mid-fire soldier. */
+function resetBattle() {
+  soldierImg.src = SPRITES.soldier;
+  soldierWrap.className = "combatant-wrap soldier-wrap";
+  enemyImg.src = SPRITES.enemy;
+  enemyWrap.className = "combatant-wrap enemy-wrap"; // opacity 0 until spawned
+  [muzzleSoldier, muzzleEnemy, hitVignette].forEach(el => el.classList.remove("flash"));
+  battleShake.classList.remove("shake-shell");
+}
+
+/* A fresh hostile moves into the arena for each level. The offset
+   varies per level so the enemy keeps feeling alive. */
+function spawnEnemy() {
+  enemyImg.src = SPRITES.enemy;
+  enemyWrap.className = "combatant-wrap enemy-wrap";
+  enemyWrap.style.right = (5 + (level % 3) * 3) + "%";   // 5%, 8%, 11% cycle
+  enemyWrap.style.bottom = (2 + (level % 2) * 5) + "vh"; // slight depth change
+  void enemyWrap.offsetWidth;                            // restart the animation
+  enemyWrap.classList.add("spawned");
+}
+
+/* Player fires: aim, crack, hit, reload, enemy down. next() runs the
+   level transition once the sequence finishes. */
+function combatFire(myRun, next) {
+  soldierWrap.classList.add("aiming");
+  battleAfter(280, myRun, () => {
+    soldierWrap.classList.add("firing");
+    muzzleSoldier.classList.add("flash");
+    playSound("shot");
+    enemyWrap.classList.remove("aiming");
+    enemyWrap.classList.add("hit");
+  });
+  battleAfter(760, myRun, () => {
+    soldierWrap.classList.remove("firing");
+    soldierWrap.classList.add("reloading");
+    playSound("reload");
+  });
+  battleAfter(1150, myRun, () => {
+    enemyImg.src = SPRITES.enemyDown;
+    enemyWrap.classList.remove("hit");
+    enemyWrap.classList.add("fallen");
+  });
+  battleAfter(1900, myRun, next);
+}
+
+/* Enemy fires back and the player goes down — shown before the results screen. */
+function combatEnemyWins(myRun, next) {
+  battleAfter(300, myRun, () => enemyWrap.classList.add("aiming"));
+  battleAfter(650, myRun, () => {
+    muzzleEnemy.classList.add("flash");
+    playSound("enemyShot");
+    hitVignette.classList.add("flash");
+    battleShake.classList.add("shake-shell");
+  });
+  battleAfter(1150, myRun, () => {
+    soldierImg.src = SPRITES.soldierDown; // wounded pose — alive, no gore
+    soldierWrap.classList.add("reloading"); // slight settle, reuse gentle motion
+  });
+  battleAfter(2300, myRun, next);
 }
 
 function startLevel() {
@@ -134,6 +238,7 @@ function startLevel() {
   inputWrap.classList.add("hidden");
   timerWrap.classList.remove("hidden");
   answerEl.value = "";
+  spawnEnemy();
 
   // build tiles
   sequence.forEach((item, i) => {
@@ -230,24 +335,22 @@ function submitAnswer() {
     stageLabel.textContent = cfg.win;
     feedbackEl.textContent = `+${levelPoints(level)} PTS`;
     feedbackEl.className = "feedback ok";
-    setTimeout(() => {
-      if (myRun !== runId) return;
+    // correct answer -> the soldier fires and the enemy goes down
+    combatFire(myRun, () => {
       level++;
       if (level >= LEVELS.length) {
         winScreen();
       } else {
         startLevel();
       }
-    }, 1400);
+    });
   } else {
     tileRow.classList.add("bad");
     stageLabel.textContent = cfg.fail;
     feedbackEl.textContent = cfg.fail;
     feedbackEl.className = "feedback bad";
-    setTimeout(() => {
-      if (myRun !== runId) return;
-      failScreen();
-    }, 1600);
+    // wrong answer -> the enemy fires and the run is over
+    combatEnemyWins(myRun, failScreen);
   }
 }
 
@@ -286,16 +389,29 @@ function paintResults(victory) {
 
 function winScreen() {
   paintDots();
+  playSound("stingWin");
   paintResults(true);
 }
 
 function failScreen() {
   paintDots();
+  playSound("stingFail");
   paintResults(false);
 }
 
 /* ---------- events ---------- */
 startBtn.addEventListener("click", startGame);
+
+/* sound toggle: reflects the audio module's persisted mute state */
+function paintSoundBtn() {
+  if (AUDIO) soundBtn.textContent = AUDIO.getMuted() ? "🔇" : "🔊";
+}
+paintSoundBtn();
+soundBtn.addEventListener("click", () => {
+  if (!AUDIO) return;
+  AUDIO.setMuted(!AUDIO.getMuted());
+  paintSoundBtn();
+});
 replayBtn.addEventListener("click", startGame);
 submitBtn.addEventListener("click", submitAnswer);
 answerEl.addEventListener("keydown", e => {

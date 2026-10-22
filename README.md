@@ -24,6 +24,22 @@ Think you have a sharp memory? Put it to the test!
 
 ```bash
 git clone https://github.com/Temple-Daemon/test-iq-with-temple.git
+## 🪖 Tactical Combat Edition
+
+The web edition wraps the ten-level memory challenge in a tactical combat presentation:
+
+- **Correct answer → combat sequence:** the soldier aims, fires with a muzzle flash and synthesized gunshot, reloads, and the enemy goes down. The next level starts once the sequence completes.
+- **Wrong answer → the enemy fires back:** enemy muzzle flash, a hit vignette, a screen shake, and the soldier drops to a wounded pose before the results screen.
+- **A fresh enemy moves into the arena every level**, with varying positions.
+- **Scoring, personal bests, and level rules are untouched** (see below).
+
+### 🎨 Art and audio pipeline
+
+- The game is a **2D HTML/CSS/JS application** — no game engine, no WebGL, no build step. Characters are high-quality AI-generated original artwork (hero soldier, hostile mercenary, defeat poses), cut out via a chroma-key pass and quantized to small palette PNGs (~30 KB each).
+- All sound effects are **synthesized at runtime with the Web Audio API** (`game-audio.js`) — gunshots, reload clicks, win/fail stings. No audio files are downloaded. Sound can be toggled in the HUD and the preference persists.
+- The enemy faction is fictional and identity-concealed (balaclava, no national markings).
+- Combat timing is guarded by the same run-token system as the rest of the game: replaying mid-sequence can never leak stale timers.
+
 ## 🌐 Web Edition
 
 The game also ships as a browser version (no installation, no dependencies):
@@ -53,7 +69,8 @@ Scoring is transparent and deterministic:
 The core logic (sequence generation, answer parsing/validation, scoring, personal-best storage) is covered by an automated test suite using Node's built-in runner:
 
 ```bash
-node --test tests/test-core.js
+node --test tests/test-core.js          # 20 unit tests: rules, parsing, scoring, best storage
+node tests/battle-test.js               # 24 integration checks: combat choreography, reset, defeat flow
 ```
 
 Manual QA (performed in a real browser): start, replay, wrong-answer reveal, full 10-level victory run, timer cleanup on restart, mobile viewport, keyboard-only play.
