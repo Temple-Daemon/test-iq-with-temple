@@ -104,8 +104,8 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-.muzzle-soldier { left: 86%; bottom: 47%; }
-.muzzle-enemy  { left: 8%;  bottom: 40%; }
+.muzzle-soldier { left: 97%; bottom: 77%; }
+.muzzle-enemy  { left: 20%; bottom: 77%; }
 .muzzle.flash { animation: muzzle-flash 0.28s ease-out both; }
 
 /* ---------- allied team (mid and far field) ----------
