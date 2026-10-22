@@ -11,14 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=11" />
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
+  <!-- import map removed with the retired 3D mode -->
 </head>
 <body>
   <!-- Battle stage: tactical environment + combatants (pure visuals, no game state) -->
@@ -146,6 +139,11 @@
 
   <script src="game-audio.js?v=1"></script>
   <script src="game.js?v=10"></script>
+  <!-- 3D low-poly mode retired per creator direction (Oct 22 2026):
+       the photorealistic live-action presentation is the product.
+       The three.js modules remain in 3d/ unused; re-enable by
+       restoring this script tag and the import map above.
   <script type="module" src="3d/mr3d-main.js?v=10"></script>
+  -->
 </body>
 </html>
