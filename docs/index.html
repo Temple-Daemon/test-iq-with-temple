@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Rush</title>
   <meta name="description" content="A neon memory challenge. Memorize the sequence. Prove your IQ." />
+  <meta name="theme-color" content="#0a0d07" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
   <div class="bg-image" aria-hidden="true"></div>
   <div class="bg-grid" aria-hidden="true"></div>
-  <div class="bg-glow glow-a" aria-hidden="true"></div>
-  <div class="bg-glow glow-b" aria-hidden="true"></div>
 
   <main class="shell">
 
@@ -32,22 +31,26 @@
     <section class="screen" id="startScreen">
       <p class="kicker">TEN LEVELS. ONE MIND.</p>
       <h2 class="screen-title">Think you have a<br /><span class="accent">sharp memory?</span></h2>
-      <p class="screen-sub">Memorize the sequence before the timer wipes it.<br />Type it back. One mistake ends the run.</p>
-      <button class="btn btn-primary btn-lg" id="startBtn">▶ START RUN</button>
-      <p class="tip">Numbers, letters, and mixed sequences ahead.</p>
+      <p class="screen-sub">Memorize the sequence before the timer wipes it.<br />Type it back, space separated. One mistake ends the run.</p>
+      <p id="startBest" class="start-best hidden" aria-label="Your personal best score"></p>
+      <button type="button" class="btn btn-primary btn-lg" id="startBtn">▶ START RUN</button>
+      <p class="tip">Numbers, letters, and mixed sequences ahead · clearing level n scores n × 100 points</p>
     </section>
 
     <!-- Game screen -->
     <section class="screen hidden" id="gameScreen">
       <div class="stage-top">
         <span class="level-label">LEVEL <span id="levelNum" class="accent">1</span>/10</span>
+        <span class="score-label">SCORE <span id="scoreVal" class="accent">0</span></span>
         <span class="stage-label" id="stageLabel">MEMORIZE</span>
       </div>
 
       <div class="tile-row" id="tileRow"></div>
 
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+
       <div class="timer-wrap" id="timerWrap">
-        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+        <div class="timer-bar" role="progressbar" aria-label="Memorize time remaining"><div class="timer-fill" id="timerFill"></div></div>
         <span class="timer-count" id="timerCount">3</span>
       </div>
 
@@ -55,7 +58,7 @@
         <label class="input-hint" for="answer">Type the sequence, space separated</label>
         <div class="input-row">
           <input id="answer" class="answer-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. 4 1 3 2" />
-          <button class="btn btn-primary" id="submitBtn">SUBMIT</button>
+          <button type="button" class="btn btn-primary" id="submitBtn">SUBMIT</button>
         </div>
       </div>
     </section>
@@ -64,15 +67,37 @@
     <section class="screen hidden" id="endScreen">
       <p class="kicker" id="endKicker">RUN OVER</p>
       <h2 class="screen-title" id="endTitle">YOU FLOPPED</h2>
-      <p class="screen-sub" id="endSub">You reached level 3 of 10.</p>
+      <p class="screen-sub" id="endSub">You reached level 1 of 10.</p>
+
+      <div class="stats" role="group" aria-label="Run results">
+        <div class="stat">
+          <span class="stat-label">LEVEL REACHED</span>
+          <span class="stat-value" id="statLevel">1 / 10</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">LEVELS CLEARED</span>
+          <span class="stat-value" id="statCleared">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">SCORE</span>
+          <span class="stat-value" id="statScore">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">PERSONAL BEST</span>
+          <span class="stat-value" id="statBest">—</span>
+        </div>
+      </div>
+      <p id="bestBadge" class="badge-new hidden" role="status">★ NEW PERSONAL BEST</p>
+
       <div class="end-actions">
-        <button class="btn btn-primary btn-lg" id="replayBtn">⟳ REPLAY</button>
+        <button type="button" class="btn btn-primary btn-lg" id="replayBtn">⟳ REPLAY</button>
       </div>
     </section>
 
     <footer class="foot">MEMORY RUSH · built by Izuchukwu Christian · <a href="https://github.com/Temple-Daemon/test-iq-with-temple" target="_blank" rel="noopener">GitHub</a></footer>
   </main>
 
-  <script src="game.js?v=4"></script>
+  <script src="game-core.js?v=1"></script>
+  <script src="game.js?v=5"></script>
 </body>
 </html>

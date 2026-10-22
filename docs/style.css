@@ -268,3 +268,90 @@ body::after {
   .input-row { flex-direction: column; }
   .bg-image { background-position: center top; opacity: 0.3; }
 }
+
+/* ============ additions v5: a11y, feedback, results ============ */
+
+/* keyboard focus is always visible (buttons + input) */
+.btn:focus-visible,
+.answer-input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--lemon);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* respect players who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* stage-top now carries a live score */
+.stage-top { align-items: baseline; }
+.score-label {
+  font-size: 0.85rem; letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-left: auto; margin-right: 1.2rem;
+}
+.stage-top .stage-label { flex: none; }
+
+/* feedback banner (level points, warnings, fail lines) */
+.feedback {
+  min-height: 1.5em;
+  font-family: var(--font-display);
+  font-size: 0.85rem; letter-spacing: 0.14em;
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+.feedback.ok    { color: var(--green); text-shadow: 0 0 12px rgba(125, 255, 94, 0.5); }
+.feedback.bad   { color: var(--red);  text-shadow: 0 0 12px rgba(255, 56, 96, 0.5); }
+.feedback.warn  { color: var(--lemon); text-shadow: var(--glow-lemon); }
+
+/* empty-answer shake on the input */
+.answer-input.shake { animation: shake 0.35s ease; }
+
+/* results stats grid */
+.stats {
+  display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 0.8rem; width: 100%; max-width: 640px; margin-top: 0.6rem;
+}
+.stat {
+  display: flex; flex-direction: column; gap: 0.35rem;
+  padding: 0.9rem 0.6rem;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.stat-label {
+  font-size: 0.62rem; letter-spacing: 0.22em; color: var(--muted);
+}
+.stat-value {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 1.25rem; color: var(--lemon); text-shadow: var(--glow-lemon);
+}
+
+/* new personal best badge */
+.badge-new {
+  font-family: var(--font-display); font-size: 0.8rem;
+  letter-spacing: 0.24em; color: var(--green);
+  text-shadow: 0 0 14px rgba(125, 255, 94, 0.6);
+  animation: fadeUp 0.5s ease both;
+}
+
+/* start screen personal best chip */
+.start-best {
+  font-family: var(--font-display); font-size: 0.78rem;
+  letter-spacing: 0.22em; color: var(--lemon);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  background: rgba(215, 255, 62, 0.06);
+}
+
+@media (max-width: 560px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stage-top { flex-wrap: wrap; gap: 0.4rem 0.8rem; }
+  .score-label { margin-left: 0; }
+}
