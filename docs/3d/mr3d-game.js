@@ -14,10 +14,10 @@ import { createInput } from "./mr3d-controls.js";
 const FACE_TEX = "assets/3d/hero-face.png";
 
 const SQUAD_DEF = [
-  { pos: [-6.5, -6], tint: 0xcfd6db, helmet: true, goggles: true, pack: true, route: [[-6.5, -6], [-2, -11], [4, -8]] },
-  { pos: [8, -9], tint: 0xc2ccd2, helmet: true, goggles: false, pack: false, route: [[8, -9], [12, -4], [3, -3]] },
-  { pos: [-3, -13], tint: 0xd6dde2, helmet: true, goggles: true, pack: true, route: [[-3, -13], [-9, -10], [-11, -3]] },
-  { pos: [11, -14], tint: 0xb8c2c9, helmet: true, goggles: false, pack: true, route: [[11, -14], [6, -16], [1, -12]] },
+  { pos: [-6.5, -6], tint: 0xd9dee3, camo: 0xdde3e7, helmet: true, goggles: true,  pack: true,  route: [[-6.5, -6], [-2, -11], [4, -8]] },
+  { pos: [8, -9],  tint: 0xb7c2b8, camo: 0xc9d3cb, helmet: true, goggles: false, pack: false, route: [[8, -9], [12, -4], [3, -3]] },
+  { pos: [-3, -13], tint: 0x9fb0c4, camo: 0xb4c2d4, helmet: true, goggles: true,  pack: true,  route: [[-3, -13], [-9, -10], [-11, -3]] },
+  { pos: [11, -14], tint: 0xcfc4ae, camo: 0xd9d2c0, helmet: true, goggles: false, pack: true,  route: [[11, -14], [6, -16], [1, -12]] },
 ];
 
 export class Warzone {
@@ -71,7 +71,7 @@ export class Warzone {
     for (const def of SQUAD_DEF) {
       const s = makeSoldier(this.assets, {
         uniform: def.tint, skin: 0xd9b08c,
-        camo: 0xdde3e7, camoDark: 0x6b7377,
+        camo: def.camo, camoDark: 0x6b7377,
         helmet: def.helmet, goggles: def.goggles, backpack: def.pack, pouches: true, rifle: true,
       }, this.loader, THREE);
       s.root.position.set(def.pos[0], 0, def.pos[1]);

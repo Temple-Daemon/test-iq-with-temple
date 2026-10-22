@@ -89,8 +89,9 @@ function buildRifle() {
   // optic
   addMesh(g, new THREE.BoxGeometry(0.06, 0.06, 0.16), dark, 0, 0.13, -0.1);
   const muzzle = new THREE.Object3D();
-  muzzle.position.set(0, 0.045, -0.88);
+  muzzle.position.set(0, 0.045, -0.9);
   g.add(muzzle);
+  g.scale.setScalar(2.4);          // the rig is ~2.25 units tall: match its scale
   g.rotation.set(0, Math.PI / 2, 0); // hand bones vary; default aim along -Z of parent
   return { group: g, muzzle };
 }
@@ -104,31 +105,33 @@ function addGear(root, opts, THREE_REF) {
   const hips = bone(root, "hips");
   const handR = bone(root, "hand.r");
 
+  /* The rig is ~2.25 units tall with the head bone at the neck:
+     the head mesh spans +0.42 (center) to +0.96 above the bone, and the
+     face points -Z (verified from the live render). Gear is sized to
+     those real proportions. */
   if (head && opts.helmet !== "none") {
     const h = new THREE.Group();
-    const dome = addMesh(h, new THREE.SphereGeometry(0.155, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.62), camo);
-    dome.position.y = 0.02;
-    const snow = addMesh(h, new THREE.SphereGeometry(0.158, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.35),
-      new THREE.MeshStandardMaterial({ color: 0xe8edf2, roughness: 0.97 }), 0, 0.025, 0);
-    snow.scale.y = 0.5;
-    addMesh(h, new THREE.BoxGeometry(0.22, 0.05, 0.16), camoDark, 0, -0.02, 0.13); // brim front
-    if (opts.goggles) addMesh(h, new THREE.BoxGeometry(0.19, 0.045, 0.04),
-      new THREE.MeshStandardMaterial({ color: 0x14161a, roughness: 0.3 }), 0, 0.05, 0.145);
-    h.rotation.x = -0.08;
+    addMesh(h, new THREE.SphereGeometry(0.47, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.62), camo, 0, 0.42, 0);
+    const snow = addMesh(h, new THREE.SphereGeometry(0.49, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.35),
+      new THREE.MeshStandardMaterial({ color: 0xe8edf2, roughness: 0.97 }), 0, 0.44, 0);
+    snow.scale.y = 0.55;
+    addMesh(h, new THREE.BoxGeometry(0.62, 0.1, 0.34), camoDark, 0, 0.30, -0.36); // brim, front = -Z
+    if (opts.goggles) addMesh(h, new THREE.BoxGeometry(0.5, 0.13, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x14161a, roughness: 0.3 }), 0, 0.47, -0.42);
     head.add(h);
   }
   if (chest) {
     const v = new THREE.Group();
-    addMesh(v, new THREE.BoxGeometry(0.36, 0.42, 0.26), camoDark, 0, -0.02, 0);
-    addMesh(v, new THREE.BoxGeometry(0.3, 0.12, 0.05), camo, 0, -0.06, 0.16); // mag pouches
-    addMesh(v, new THREE.BoxGeometry(0.3, 0.1, 0.05), camo, 0, 0.12, 0.16);
+    addMesh(v, new THREE.BoxGeometry(0.78, 0.88, 0.56), camoDark, 0, -0.04, 0);
+    addMesh(v, new THREE.BoxGeometry(0.62, 0.24, 0.12), camo, 0, -0.12, -0.34); // mag pouches, front = -Z
+    addMesh(v, new THREE.BoxGeometry(0.62, 0.2, 0.12), camo, 0, 0.24, -0.34);
     chest.add(v);
   }
   if (spine && opts.backpack) {
-    addMesh(spine, new THREE.BoxGeometry(0.3, 0.36, 0.16), camoDark, 0, 0, -0.17);
+    addMesh(spine, new THREE.BoxGeometry(0.62, 0.78, 0.34), camoDark, 0, 0.02, 0.44); // back = +Z
   }
   if (hips && opts.pouches) {
-    addMesh(hips, new THREE.BoxGeometry(0.26, 0.12, 0.16), camoDark, 0, -0.06, -0.1);
+    addMesh(hips, new THREE.BoxGeometry(0.56, 0.26, 0.36), camoDark, 0, -0.14, 0.24);
   }
   if (handR && opts.rifle) {
     const { group, muzzle } = buildRifle();
@@ -145,7 +148,7 @@ function addFace(root, textureURL, loader, THREE_REF) {
     if (!head || !textureURL) return resolve(null);
     loader.load(textureURL, tex => {
       tex.colorSpace = THREE.SRGBColorSpace;
-      const cap = new THREE.SphereGeometry(0.132, 20, 14,
+      const cap = new THREE.SphereGeometry(0.46, 24, 16,
         Math.PI * 0.5 + Math.PI * 0.34, Math.PI * 0.32 * 2,
         Math.PI * 0.22, Math.PI * 0.4);
       const mat = new THREE.MeshStandardMaterial({
@@ -154,6 +157,7 @@ function addFace(root, textureURL, loader, THREE_REF) {
       });
       const face = new THREE.Mesh(cap, mat);
       face.rotation.y = Math.PI * 0.5 + Math.PI * 0.34;
+      face.position.y = 0.42; // center of the head mesh relative to the head bone
       head.add(face);
       resolve(face);
     }, undefined, () => resolve(null));
@@ -161,13 +165,18 @@ function addFace(root, textureURL, loader, THREE_REF) {
 }
 
 export function makeSoldier(assets, opts, loader, THREE_REF) {
-  const root = SkeletonUtils.clone(assets.mannequin);
-  root.traverse(o => {
+  const model = SkeletonUtils.clone(assets.mannequin);
+  model.traverse(o => {
     if (o.isMesh) {
       o.castShadow = true;
       o.receiveShadow = false;
     }
   });
+  /* the rig is ~2.25 units tall; wrap it so the soldier stands ~1.75m
+     in world units (movement speeds and camera distances assume that) */
+  const root = new THREE.Group();
+  root.add(model);
+  root.scale.setScalar(0.78);
 
   /* recolor: one material for gear-ish body, separate for the head */
   const uniform = new THREE.MeshStandardMaterial({
@@ -183,7 +192,7 @@ export function makeSoldier(assets, opts, loader, THREE_REF) {
   });
 
   const muzzle = addGear(root, opts, THREE_REF);
-  const mixer = new THREE.AnimationMixer(root);
+  const mixer = new THREE.AnimationMixer(model);
   const actions = {};
   for (const [key, clipName] of Object.entries(CLIP)) {
     const clip = assets.clips[clipName];
