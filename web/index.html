@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Rush</title>
+  <meta name="description" content="A neon memory challenge. Memorize the sequence. Prove your IQ." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow glow-a" aria-hidden="true"></div>
+  <div class="bg-glow glow-b" aria-hidden="true"></div>
+
+  <main class="shell">
+
+    <!-- Header -->
+    <header class="hud">
+      <div class="brand">
+        <span class="brand-icon">🧠</span>
+        <h1 class="brand-title">MEMORY <span class="accent">RUSH</span></h1>
+      </div>
+      <div class="level-track" id="levelTrack" aria-label="Level progress"></div>
+    </header>
+
+    <!-- Start screen -->
+    <section class="screen" id="startScreen">
+      <p class="kicker">TEN LEVELS. ONE MIND.</p>
+      <h2 class="screen-title">Think you have a<br /><span class="accent">sharp memory?</span></h2>
+      <p class="screen-sub">Memorize the sequence before the timer wipes it.<br />Type it back. One mistake ends the run.</p>
+      <button class="btn btn-primary btn-lg" id="startBtn">▶ START RUN</button>
+      <p class="tip">Numbers, letters, and mixed sequences ahead.</p>
+    </section>
+
+    <!-- Game screen -->
+    <section class="screen hidden" id="gameScreen">
+      <div class="stage-top">
+        <span class="level-label">LEVEL <span id="levelNum" class="accent">1</span>/10</span>
+        <span class="stage-label" id="stageLabel">MEMORIZE</span>
+      </div>
+
+      <div class="tile-row" id="tileRow"></div>
+
+      <div class="timer-wrap" id="timerWrap">
+        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+        <span class="timer-count" id="timerCount">3</span>
+      </div>
+
+      <div class="input-wrap" id="inputWrap">
+        <label class="input-hint" for="answer">Type the sequence, space separated</label>
+        <div class="input-row">
+          <input id="answer" class="answer-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. 4 1 3 2" />
+          <button class="btn btn-primary" id="submitBtn">SUBMIT</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- End screen -->
+    <section class="screen hidden" id="endScreen">
+      <p class="kicker" id="endKicker">RUN OVER</p>
+      <h2 class="screen-title" id="endTitle">YOU FLOPPED</h2>
+      <p class="screen-sub" id="endSub">You reached level 3 of 10.</p>
+      <div class="end-actions">
+        <button class="btn btn-primary btn-lg" id="replayBtn">⟳ REPLAY</button>
+      </div>
+    </section>
+
+    <footer class="foot">MEMORY RUSH · built by Izuchukwu Christian · <a href="https://github.com/Temple-Daemon/test-iq-with-temple" target="_blank" rel="noopener">GitHub</a></footer>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
