@@ -1,3 +1,6 @@
+(function () {
+"use strict";
+
 /* ============================================================
    MEMORY RUSH — web edition (UI layer)
    ------------------------------------------------------------
@@ -322,3 +325,5 @@ document.addEventListener("visibilitychange", () => {
 /* ---------- init ---------- */
 buildDots();
 paintStartBest();
+
+})();

@@ -1,3 +1,6 @@
+(function () {
+"use strict";
+
 /* ============================================================
    MEMORY RUSH — game core (pure logic, no DOM)
    ------------------------------------------------------------
@@ -142,3 +145,5 @@ if (typeof module !== "undefined" && module.exports) {
 } else if (typeof window !== "undefined") {
   window.MemoryRushCore = MemoryRushCore;
 }
+
+})();
