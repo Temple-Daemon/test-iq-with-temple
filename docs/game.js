@@ -148,7 +148,11 @@ function startLevel() {
 
 function hideTiles() {
   [...tileRow.children].forEach((tile, i) => {
-    setTimeout(() => tile.classList.add("hidden-tile"), i * 80);
+    setTimeout(() => {
+      tile.classList.add("hidden-tile");
+      const front = tile.querySelector(".tile-front");
+      if (front) front.textContent = "?";   // JS-level clear: numbers are gone no matter what
+    }, i * 80);
   });
   setTimeout(() => {
     stageLabel.textContent = "RECALL";
@@ -164,7 +168,11 @@ function submitAnswer() {
   const guess = parseAnswer(answerEl.value);
 
   // reveal correct sequence
-  [...tileRow.children].forEach(t => t.classList.remove("hidden-tile"));
+  [...tileRow.children].forEach((t, i) => {
+    t.classList.remove("hidden-tile");
+    const front = t.querySelector(".tile-front");
+    if (front) front.textContent = sequence[i];
+  });
 
   const correct =
     guess.length === sequence.length &&
