@@ -287,7 +287,9 @@ export class Warzone {
       this.camera.lookAt(p.x, p.y + 1.35, p.z);
       return;
     }
-    const target = new THREE.Vector3(p.x, p.y + 1.35, p.z);
+    // gameplay frames the hero in the lower third so the memorize tiles
+    // (a DOM overlay at screen center) are never blocked by his body
+    const target = new THREE.Vector3(p.x, p.y + 2.8, p.z);
     if (this.runPhase === "idle" && !this.startedOnce && !this.faceView) {
       // menu: slow cinematic orbit
       const a = this.t * 0.12;
