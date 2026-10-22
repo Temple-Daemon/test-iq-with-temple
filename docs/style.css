@@ -42,7 +42,7 @@ body {
 }
 .battle-env {
   position: absolute; inset: 0;
-  background: url("assets/environment.jpg") center / cover no-repeat;
+  background: url("assets/environment.jpg?v=6") center / cover no-repeat;
   background-color: #1b1408; /* while the photo loads */
 }
 /* subtle shading keeps HUD + input readable without darkening the scene */

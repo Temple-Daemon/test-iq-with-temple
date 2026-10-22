@@ -67,9 +67,9 @@ const AUDIO = window.MemoryRushAudio || null; // synthesized SFX; game works wit
 
 const SPRITES = {
   soldier: "assets/soldier.png?v=5",
-  soldierDown: "assets/soldier-down.png?v=5",
+  soldierDown: "assets/soldier-down.png?v=6",
   enemy: "assets/enemy.png?v=5",
-  enemyDown: "assets/enemy-down.png?v=5",
+  enemyDown: "assets/enemy-down.png?v=6",
 };
 const SCENE = [
   "assets/ally-kneel.png?v=1",
